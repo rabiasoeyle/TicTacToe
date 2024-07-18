@@ -1,0 +1,146 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: rgba(50, 50, 50, 1);
+}
+
+#headline {
+  font-size: 36px;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+#row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+#playerIcons{
+  display: flex;
+  align-items: center; /* Zentriert die Symbole vertikal */
+  gap:16px;
+  justify-content: space-around;
+  width:200px;
+
+}
+
+#playerIcons .circle,
+#playerIcons .cross {
+  height: 40px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+#playerIcons .circle {
+  background-color: transparent;
+  border: 5px solid #007bff; 
+  width: 40px;
+}
+
+#playerIcons .cross {
+  background-color: transparent;
+  position: relative;
+}
+
+#playerIcons .cross::before,
+#playerIcons .cross::after {
+  content: '';
+  position: absolute;
+  height: 5px;
+  background-color: orange;
+  top: 18px;
+}
+
+#playerIcons .cross::before {
+  transform: rotate(45deg);
+}
+
+#playerIcons .cross::after {
+  transform: rotate(-45deg);
+}
+
+table {
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border: none; /* Kein äußerer Rand der Tabelle */
+}
+
+td {
+  width: 100px;
+  height: 100px;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #333;
+  transition: background-color 0.3s;
+  /* Keine äußeren Linien der Zelle */
+  border-left: 2px solid white;
+}
+
+td:hover{
+  background-color: rgba(255,255,255,0.2);
+}
+tr:first-child {
+  border-top:none;
+}
+td:first-child {
+  border-left: none; /* Keine Linie links für die erste Zelle */
+}
+ tr:nth-child(2){
+  border-top: 2px solid white;
+}
+tr:nth-child(3){
+  border-top: 2px solid white;
+}
+
+.circle {
+  width: 55px;
+  height: 55px;
+  border: 5px solid #007bff;
+  border-radius: 50%;
+  background-color: transparent;
+  display: inline-block;
+  position: relative;
+  left: 20px;
+  right: 20px;
+}
+
+.cross {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  left: 20px;
+  right: 20px;
+}
+
+.cross::before,
+.cross::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 5px;
+  background-color: orange;
+  top: 25px;
+}
+
+.cross::before {
+  transform: rotate(45deg);
+}
+
+.cross::after {
+  transform: rotate(-45deg);
+}
+
+.active {
+  font-weight: bold;
+  color: #fff;
+}
+
