@@ -11,6 +11,12 @@ function render() {
   renderTable();
 }
 
+const winCombinations = [
+  [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontal
+  [0, 3, 6], [1, 4, 7], [2, 5, 8], // Vertikal
+  [0, 4, 8], [2, 4, 6]             // Diagonal
+];
+
 function renderPlayerIcon() {
   let row = document.getElementById('row');
   row.innerHTML = ''; // Löscht den Inhalt von #row
@@ -65,11 +71,126 @@ function renderField(value) {
 function makeMove(index) {
   if (fields[index] === null) {
     fields[index] = currentPlayer;
-    currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle'; 
     //hier wird mit einem ternary operator geprüft, wer gerade an der reihe ist
     renderTable();
+    if (checkWinner()) {
+      setTimeout(() => showWinner(currentPlayer), 1000); // Nach 5 Sekunden den Gewinner anzeigen
+    }
+    currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle'; 
   }
 }
+
+function checkWinner() {
+  for (let combination of winCombinations) {
+    //Die for ... of Schleife wird verwendet, um über iterable Objekte wie Arrays zu iterieren. 
+    //In diesem Fall iteriert sie über jedes Element des winCombinations Arrays.
+      let [a, b, c] = combination;
+      if (fields[a] && fields[a] === fields[b] && fields[a] === fields[c]) {
+        //hier wird überprüft, ob alle 3 Felder gleich sind
+          markWinningLine(combination);
+      return true;
+    }
+  }
+  return false;
+  }
+
+
+function markWinningLine(combination) {
+  const content = document.getElementById('content');
+  let table = document.getElementById('gameTable');
+  const tableCells = document.getElementsByTagName('td');
+  const tableRect = document.getElementById('gameTable').getBoundingClientRect();
+  
+  // Sicherstellen, dass nur genau drei Felder übergeben werden
+  if (combination.length === 3) {
+    const [a, b, c] = combination;
+
+    // Positionen der Zellen mittig ermitteln
+    const posA = {
+      top: tableCells[a].offsetTop + tableCells[a].offsetHeight / 2,
+      left: tableCells[a].offsetLeft + tableCells[a].offsetWidth / 2
+    };
+    const posB = {
+      top: tableCells[b].offsetTop + tableCells[b].offsetHeight / 2,
+      left: tableCells[b].offsetLeft + tableCells[b].offsetWidth / 2
+    };
+    const posC = {
+      top: tableCells[c].offsetTop + tableCells[c].offsetHeight / 2,
+      left: tableCells[c].offsetLeft + tableCells[c].offsetWidth / 2
+    };
+
+    // Erzeuge eine Linie als DIV-Element
+    const line = document.createElement('div');
+    line.classList.add('win-line');
+
+    // Berechne die Position und Dimensionen der Linie
+    if (posA.top === posB.top && posB.top === posC.top) {
+      // Horizontal
+      line.style.top = `${posA.top-5}px`; // etwas über der Mitte der Zelle
+      // line.style.left = `${Math.min(posA.left, posB.left, posC.left)}px`;
+      line.style.width = `${Math.abs(posC.left - posA.left + tableCells[a].offsetWidth)}px`;
+      line.style.height = '5px';
+    } else if (posA.left === posB.left && posB.left === posC.left) {
+      // Vertikal
+      line.style.top = `0px`;
+      line.style.left = `${posA.left - 20}px`; // etwas links der Mitte der Zelle
+      line.style.height = `${Math.abs(posC.top - posA.top + tableCells[a].offsetHeight)}px`;
+      line.style.width = '5px';
+    } else {
+      // Diagonal
+      const slope = (posC.top - posA.top) / (posC.left - posA.left);
+      //steigungsberechnung
+      const angle = Math.atan(slope) * (180 / Math.PI); // Umrechnung in Grad
+      //winkelberechnung
+      //Math.atan ist die Funktion, die den Arkustangens (also den Winkel) einer gegebenen Steigung in Bogenmaß (Radians) berechnet.
+      //gradumrechnung
+      //Die transform: rotate()-CSS-Eigenschaft benötigt den Winkel in Grad, nicht in Bogenmaß. Daher müssen wir von Bogenmaß zu Grad umrechnen (1 Rad = 180/π Grad).
+      const length = Math.sqrt(Math.pow(posC.left - posA.left, 2) + Math.pow(posC.top - posA.top, 2));
+      //längenberechnung
+      //Dies ist die Distanz zwischen den beiden Punkten (posA und posC).
+      line.style.width = `${length +40 }px`;
+      line.style.height = '5px';
+      if(winCombinations[7]){
+        line.style.top = `0px`;
+        line.style.left = `0px`;
+      }else if (winCombinations[8]){
+        line.style.top = none; //beschreibt die obere Startposition der linie
+        line.style.left = `${posA.left - 5}px`; //setzt die linke Position der linie
+      }
+      line.style.transform = `rotate(${angle}deg)`;
+      //Dreht die Linie um den berechneten Winkel, sodass sie diagonal ausgerichtet wird.
+      line.style.transformOrigin = 'top left';
+      //Setzt den Ursprung der Transformation (Drehung) auf die obere linke Ecke der Linie. 
+      //Dies ist wichtig, damit die Drehung relativ zur oberen linken Ecke der Linie stattfindet.
+    }
+
+    table.appendChild(line);
+  }
+}
+
+
+function showWinner(winner) {
+  const content = document.getElementById('content');
+  content.innerHTML = ''; // Löscht die aktuelle Tabelle und die Gewinnlinie
+
+  const winnerMessage = document.createElement('div');
+  winnerMessage.className = 'winner-message';
+  winnerMessage.innerHTML = `
+    <h1>${currentPlayer === 'circle' ? 'Cross' : 'Circle'} Wins!</h1>
+    <p>Congratulations!</p>
+    <div class="trophy"></div>
+    <button onclick="restartGame()">Play Again</button>
+  `;
+  content.appendChild(winnerMessage);
+}
+
+
+function restartGame() {
+  fields.fill(null);
+  currentPlayer = 'circle';
+  render();
+}
+
 
 // Initialrenderung beim Laden der Seite
 document.addEventListener('DOMContentLoaded', function() {

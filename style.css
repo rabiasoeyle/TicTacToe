@@ -72,6 +72,7 @@ table {
   border-collapse: collapse;
   margin-bottom: 20px;
   border: none; /* Kein äußerer Rand der Tabelle */
+  position: relative;
 }
 
 td {
@@ -83,6 +84,8 @@ td {
   transition: background-color 0.3s;
   /* Keine äußeren Linien der Zelle */
   border-left: 2px solid white;
+  
+  
 }
 
 td:hover{
@@ -142,5 +145,11 @@ tr:nth-child(3){
 .active {
   font-weight: bold;
   color: #fff;
+}
+.win-line {
+  position: absolute;
+  background-color: white;
+  z-index: 1;
+  height:10px;
 }
 
